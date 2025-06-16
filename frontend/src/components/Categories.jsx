@@ -1,8 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const Categories = () => {
-    const [categoryName, setCategoryName] = useState("");
-    const [categoryDescription, setCategoryDescription] = useState("");
+  const [categoryName, setCategoryName] = useState("");
+  const [categoryDescription, setCategoryDescription] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        'http://localhost:3001/api/category/add',
+        { categoryName, categoryDescription },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        alert("Category Added Successfully");
+        setCategoryName("");
+        setCategoryDescription("");
+      } else {
+        console.log("Error adding category", response.data);
+        alert("Error adding category. Please try again.");
+      }
+    } catch (error) {
+      console.error("Request failed:", error);
+      alert("An error occurred while adding the category.");
+    }
+  };
 
   return (
     <div className='p-4'>
@@ -12,10 +40,11 @@ const Categories = () => {
         <div className='lg:w-1/3'>
           <div className='bg-white shadow-md rounded-lg p-4'>
             <h2 className='text-center text-xl font-bold mb-4'>Add Category</h2>
-            <form className='space-y-4' onSUbmit={handleSubmit}> 
+            <form className='space-y-4' onSubmit={handleSubmit}>
               <div>
                 <input
                   type="text"
+                  value={categoryName}
                   placeholder='Category Name'
                   className='border w-full p-2 rounded-md'
                   onChange={(e) => setCategoryName(e.target.value)}
@@ -24,6 +53,7 @@ const Categories = () => {
               <div>
                 <input
                   type="text"
+                  value={categoryDescription}
                   placeholder='Category Description'
                   className='border w-full p-2 rounded-md'
                   onChange={(e) => setCategoryDescription(e.target.value)}
@@ -38,7 +68,7 @@ const Categories = () => {
             </form>
           </div>
         </div>
-      </div> {/* <-- closed this div */}
+      </div>
     </div>
   );
 }
