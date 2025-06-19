@@ -7,9 +7,9 @@ const Categories = () => {
   const [categoryDescription, setCategoryDescription] = useState("");
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editCategory,setEditCategory] = useState(null);
 
-  useEffect(() => {
-      const fetchCategories = async () => {
+  const fetchCategories = async () => {
          setLoading(true);
         try {
           const response = await axios.get('http://localhost:3001/api/category',{
@@ -25,12 +25,34 @@ const Categories = () => {
           setLoading(false);
         }
       };
+  useEffect(() => {
       fetchCategories();
   },[]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
+    if(editCategory){
+         const response = await axios.put(
+        `http://localhost:3001/api/category/${editCategory}`,
+        { categoryName, categoryDescription },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setEditCategory(null);
+        setCategoryName("");
+        setCategoryDescription("");
+        alert("Category Updated Successfully");
+        fetchCategories();
+      } else {
+        console.log("Error editing category", response.data);
+        alert("Error editing category. Please try again.");
+      }
+    } else{
       const response = await axios.post(
         'http://localhost:3001/api/category/add',
         { categoryName, categoryDescription },
@@ -42,18 +64,54 @@ const Categories = () => {
       );
 
       if (response.data.success) {
-        alert("Category Added Successfully");
         setCategoryName("");
         setCategoryDescription("");
+        alert("Category Added Successfully");
+        fetchCategories();
       } else {
         console.log("Error adding category", response.data);
         alert("Error adding category. Please try again.");
       }
-    } catch (error) {
-      console.error("Request failed:", error);
-      alert("An error occurred while adding the category.");
-    }
+    } 
   };
+
+  const handleEdit = async (category) => {
+    setEditCategory(category._id);
+    setCategoryName(category.categoryName);
+    setCategoryDescription(category.categoryDescription);
+  }
+
+  const handleCancel = async () => {
+    setEditCategory(null);
+    setCategoryName("");
+    setCategoryDescription("");
+  }
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this category?");
+    if(confirmDelete) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3001/api/category/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
+            }
+          }
+        )
+        if(response.data.success) {
+          alert("Category deleted successfully");
+          fetchCategories();
+        } else {
+          console.log("Error deleting category",response.data);
+          alert("Error deleting category. Please try again.");
+        }
+      } catch (error) {
+        console.log('Error deleting category:',error);
+        alert('Error deleting category. Please try again');
+      }
+    }
+  }
 
   if(loading) return <div>Loading...</div>
 
@@ -64,7 +122,7 @@ const Categories = () => {
       <div className='flex flex-col lg:flex-row gap-4'>
         <div className='lg:w-1/3'>
           <div className='bg-white shadow-md rounded-lg p-4'>
-            <h2 className='text-center text-xl font-bold mb-4'>Add Category</h2>
+            <h2 className='text-center text-xl font-bold mb-4'>{editCategory ? 'Edit Category' : 'Add Category'}</h2>
             <form className='space-y-4' onSubmit={handleSubmit}>
               <div>
                 <input
@@ -84,12 +142,21 @@ const Categories = () => {
                   onChange={(e) => setCategoryDescription(e.target.value)}
                 />
               </div>
+              <div className='flex space-x-2'>
               <button
                 type="submit"
-                className='w-full rounded-md bg-green-500 text-white p-3 cursor-pointer hover:bg-green-600'
+                className='w-full mt-2 rounded-md bg-green-500 text-white p-3 cursor-pointer hover:bg-green-600'
               >
-                Add Category
+                {editCategory ? 'Save Changes' : 'Add Category'}
               </button>
+              {
+                editCategory && (
+                  <button type='button' className='w-full mt-2 rounded-md bg-red-500 text-white p-3 cursor-pointer hover:bg-red-600' onClick={handleCancel}>
+                    Cancel
+                  </button>
+                )
+              }
+              </div>
             </form>
           </div>
         </div>
@@ -98,16 +165,20 @@ const Categories = () => {
                 <table className='w-full border-collapse border border-gray-200'>
                     <thead>
                       <tr className='bg-gray-100'>
+                        <th className='border border-gray-200 p-2'>S No</th>
                         <th className='border border-gray-200 p-2'>Category Name</th>
-                        <th className='border border-gray-200 p-2'>Description</th>
                         <th className='border border-gray-200 p-2'>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {categories.map((category) => (
-                        <tr key={category._id}>
+                      {categories.map((category,index) => (
+                        <tr key={index}>
+                            <td className='border border-gray-200 p-2'>{index+1}</td>
                             <td className='border border-gray-200 p-2'>{category.categoryName}</td>
-                            <td className='border border-gray-200 p-2'>{category.categoryDescription}</td>
+                            <td className='border border-gray-200 p-2'>
+                              <button className='bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mr-2' onClick={() => handleEdit(category)}>Edit</button>
+                              <button className='bg-red-500 text-white p-2 rounded-md hover:bg-red-600' onClick={() => handleDelete(category._id)}>Delete</button>
+                            </td>
                         </tr>
                       ))}
                     </tbody>
