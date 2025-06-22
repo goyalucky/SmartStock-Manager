@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import Dashboard from './pages/Dashboard';
 import Categories from './components/Categories';
+import Suppliers from './components/Suppliers';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route index element={<h1>Summary of dashboard</h1>}/>
           <Route path="categories" element={<Categories/>}/>
           <Route path="products" element={<h1>products</h1>}/>
-          <Route path="suppliers" element={<h1>suppliers</h1>}/>
+          <Route path="suppliers" element={<Suppliers/>}/>
           <Route path="orders" element={<h1>Orders</h1>}/>
           <Route path="users" element={<h1>Users</h1>}/>
         </Route>

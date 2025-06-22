@@ -15,9 +15,10 @@ const Categories = () => {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
         },
-        timeout: 10000,
       });
+      console.log(response.data.categories);
       setCategories(response.data.categories);
+      setLoading(false)
     } catch (error) {
       console.error("Error fetching categories", error);
     } finally {
@@ -92,7 +93,8 @@ const Categories = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
+    const confirmDelete = window.confirm("Are you sure you want to delete this category?");
+    if (confirmDelete) {
       const token = localStorage.getItem('stock-token');
       try {
         const response = await axios.delete(
