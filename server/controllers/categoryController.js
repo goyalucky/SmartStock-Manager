@@ -54,7 +54,7 @@ export const updateCategory = async (req,res) => {
     }
 }
 
-export deleteCategory = async (req,res) => {
+export const deleteCategory = async (req,res) => {
     try {
         const {id} = req.params;
         const existingCategory = await Category.findById(id);
