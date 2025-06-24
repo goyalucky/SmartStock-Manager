@@ -38,7 +38,7 @@ const Categories = () => {
       let response;
       if (editCategory) {
         // Update category
-        response = await axios.put(
+        const response = await axios.put(
           `http://localhost:3001/api/category/${editCategory}`,
           { categoryName, categoryDescription },
           {
