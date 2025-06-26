@@ -6,6 +6,14 @@ const Products = () => {
     const[openModal,setOpenModal] = useState(false);
     const[categories,setCategories] = useState([]);
     const[suppliers,setSuppliers] = useState([]);
+    const [formData,setFormData] = useState({
+      name:'',
+      description:'',
+      price:'',
+      stock: '',
+      categoryId:'',
+      supplierId:'',
+    });
 
     const fetchProducts = async () => {
         try {
@@ -24,6 +32,54 @@ const Products = () => {
     useEffect(()=> {
         fetchProducts();
     },[]);
+
+    const handleChange = (e) => {
+      const {name,value} = e.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]:value,
+      }));
+    }
+
+     const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editSupplier) {
+        const response = await axios.put(
+          `http://localhost:3001/api/supplier/${editSupplier}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
+            },
+          }
+        );
+        if (response.data.success) {
+          fetchSuppliers();
+          alert('Supplier updated successfully');
+          closeModal();
+        }
+      } else {
+        const response = await axios.post(
+          'http://localhost:3001/api/supplier/add',
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
+            },
+          }
+        );
+        if (response.data.success) {
+          fetchSuppliers();
+          alert('Supplier added successfully');
+          closeModal();
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting supplier', error.message);
+      alert('An error occurred. Please try again.');
+    }
+  };
 
   return (
     <div className='w-full h-full flex flex-col gap-4 p-4'>
@@ -52,12 +108,12 @@ const Products = () => {
             >
               X
             </button>
-            <form className='flex flex-col gap-4 mt-4'>
+            <form className='flex flex-col gap-4 mt-4' onSubmit={handleSubmit}>
               <input
                 type='text'
                 name='name'
-                // value={formData.name}
-                // onChange={handleChange}
+                value={formData.name}
+                onChange={handleChange}
                 placeholder='Product Name'
                 className='border p-1 bg-white rounded px-4'
                 required
@@ -65,8 +121,8 @@ const Products = () => {
               <input
                 type='text'
                 name='description'
-                // value={formData.email}
-                // onChange={handleChange}
+                value={formData.description}
+                onChange={handleChange}
                 placeholder='Description'
                 className='border p-1 bg-white rounded px-4'
                 required
@@ -74,8 +130,8 @@ const Products = () => {
               <input
                 type='number'
                 name='price'
-                // value={formData.number}
-                // onChange={handleChange}
+                value={formData.price}
+                onChange={handleChange}
                 placeholder='Enter Price'
                 className='border p-1 bg-white rounded px-4'
                 required
@@ -83,25 +139,25 @@ const Products = () => {
               <input
                 type='number'
                 name='stock'
-                // value={formData.address}
-                // onChange={handleChange}
+                value={formData.stock}
+                onChange={handleChange}
                 placeholder='Enter Stock'
                 className='border p-1 bg-white rounded px-4'
                 required
               />
 
               <div className='w-full border'>
-                  <select name="category" className='w-full p-2'>
+                  <select name="categoryId" className='w-full p-2' onChange={handleChange} value={formData.categoryId}>
                     <option value="">Select Category</option>
                     {categories && categories.map((category) => (
                       <option key={category._id} value={category._id}>
-                            {category.name}
+                            {category.categoryName}
                       </option>
                     ))}
                   </select>
               </div>
               <div className='w-full border'>
-                  <select name="supplier" className='w-full p-2'>
+                  <select name="supplier" className='w-full p-2' onChange={handleChange} value={formData.supplierId}>
                     <option value="">Select Supplier</option>
                     {suppliers && suppliers.map((supplier) => (
                       <option key={supplier._id} value={supplier._id}>
