@@ -7,6 +7,7 @@ import ProtectedRoutes from './utils/ProtectedRoutes';
 import Dashboard from './pages/Dashboard';
 import Categories from './components/Categories';
 import Suppliers from './components/Suppliers';
+import Products from './components/Products';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
         >
           <Route index element={<h1>Summary of dashboard</h1>}/>
           <Route path="categories" element={<Categories/>}/>
-          <Route path="products" element={<h1>products</h1>}/>
+          <Route path="products" element={<Products/>}/>
           <Route path="suppliers" element={<Suppliers/>}/>
           <Route path="orders" element={<h1>Orders</h1>}/>
           <Route path="users" element={<h1>Users</h1>}/>
