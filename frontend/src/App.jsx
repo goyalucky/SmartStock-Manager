@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import Categories from './components/Categories';
 import Suppliers from './components/Suppliers';
 import Products from './components/Products';
+import Logout from './components/Logout';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="suppliers" element={<Suppliers/>}/>
           <Route path="orders" element={<h1>Orders</h1>}/>
           <Route path="users" element={<h1>Users</h1>}/>
+          <Route path="logout" element={<Logout/>}/>
         </Route>
         <Route path="/customer/dashboard" element={<h1>customer dashboard</h1>} />
         <Route path="/login" element={<Login/>} />
