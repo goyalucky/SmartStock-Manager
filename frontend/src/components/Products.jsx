@@ -44,24 +44,8 @@ const Products = () => {
      const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editSupplier) {
-        const response = await axios.put(
-          `http://localhost:3001/api/supplier/${editSupplier}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('stock-token')}`,
-            },
-          }
-        );
-        if (response.data.success) {
-          fetchSuppliers();
-          alert('Supplier updated successfully');
-          closeModal();
-        }
-      } else {
         const response = await axios.post(
-          'http://localhost:3001/api/supplier/add',
+          'http://localhost:3001/api/products/add',
           formData,
           {
             headers: {
@@ -70,14 +54,23 @@ const Products = () => {
           }
         );
         if (response.data.success) {
-          fetchSuppliers();
-          alert('Supplier added successfully');
-          closeModal();
+          // fetchSuppliers();
+          alert('Product added successfully');
+          openModal(false)
+          setFormData({
+              name:"",
+              description:"",
+              price:"",
+              stock:"",
+              categoryId:"",
+              supplierId:"",
+          })
+        } else{
+          alert("Error adding Product.Please try again.");
         }
-      }
-    } catch (error) {
-      console.error('Error submitting supplier', error.message);
-      alert('An error occurred. Please try again.');
+      } catch (error) {
+      // console.error('Error submitting supplier', error.message);
+      alert('Error adding Product. Please try again');
     }
   };
 
