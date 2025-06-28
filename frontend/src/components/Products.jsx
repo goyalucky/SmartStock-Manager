@@ -71,6 +71,7 @@ const Products = () => {
         price:"",
         stock:"",
         categoryId:"",
+        supplierId: "",
       })
     }
 
@@ -269,7 +270,7 @@ const Products = () => {
                   </select>
               </div>
               <div className='w-full border'>
-                  <select name="supplier" className='w-full p-2' onChange={handleChange} value={formData.supplierId}>
+                  <select name="supplierId" className='w-full p-2' onChange={handleChange} value={formData.supplierId}>
                     <option value="">Select Supplier</option>
                     {suppliers && suppliers.map((supplier) => (
                       <option key={supplier._id} value={supplier._id}>

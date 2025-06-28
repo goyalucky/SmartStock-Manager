@@ -37,7 +37,6 @@ const Categories = () => {
     try {
       let response;
       if (editCategory) {
-        // Update category
         const response = await axios.put(
           `http://localhost:3001/api/category/${editCategory}`,
           { categoryName, categoryDescription },
@@ -53,7 +52,6 @@ const Categories = () => {
           alert("Failed to update category");
         }
       } else {
-        // Add new category
         response = await axios.post(
           "http://localhost:3001/api/category/add",
           { categoryName, categoryDescription },
