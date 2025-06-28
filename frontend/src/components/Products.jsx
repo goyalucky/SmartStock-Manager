@@ -8,6 +8,7 @@ const Products = () => {
     const[categories,setCategories] = useState([]);
     const[suppliers,setSuppliers] = useState([]);
     const [products,setProducts] = useState([]);
+    const [filteredProducts,setFilteredProducts] = useState([]);
     const [formData,setFormData] = useState({
       name:'',
       description:'',
@@ -28,6 +29,7 @@ const Products = () => {
             setSuppliers(response.data.suppliers);
             setCategories(response.data.categories);
             setProducts(response.data.products);
+            setFilteredProducts(response.data.products);
           } else{
             console.error("Error fetching products",response.data.message);
             alert('Error fetching products. Please try again');
@@ -62,6 +64,27 @@ const Products = () => {
       })
     }
 
+    const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this Product?");
+    if (confirmDelete) {
+      try {
+        const response = await axios.delete(
+          `http://localhost:3001/api/products/${id}`,
+          {
+            headers: { Authorization: `Bearer ${localStorage.getItem('stock-token')}` },
+          }
+        );
+        if (response.data.success) {
+          alert("Product deleted successfully");
+          fetchProducts();
+        }
+      } catch (error) {
+        console.error("Error deleting product", error);
+        alert("Error deleting product. Please try again.");
+      }
+    }
+  };
+
     const closeModel = () => {
       setOpenModal(false);
       setEditProduct(null);
@@ -91,6 +114,7 @@ const Products = () => {
         );
         if(response.data.success) {
           alert("Product updated successfully");
+          fetchProducts();
           setOpenModal(false);
           setEditProduct(null);
           setFormData({
@@ -121,7 +145,7 @@ const Products = () => {
           }
         );
         if (response.data.success) {
-          // fetchSuppliers();
+          fetchProducts();
           alert('Product added successfully');
           setOpenModal(false)
           setFormData({
@@ -142,6 +166,14 @@ const Products = () => {
   }
   };
 
+  const handleSearch = (e) => {
+    setFilteredProducts(
+      products.filter((product) =>
+        product.name.toLowerCase().includes(e.target.value.toLowerCase())
+      )
+    );
+  }
+
   return (
     <div className='w-full h-full flex flex-col gap-4 p-4'>
         <h1 className='text-2xl font-bold'> Product Management</h1>
@@ -150,7 +182,7 @@ const Products = () => {
           type="text"
           placeholder='Search'
           className='border p-1 bg-white rounded px-4'
-          
+          onChange={handleSearch}
         />
         <button
           className='px-4 py-1.5 bg-blue-500 text-white rounded cursor-pointer'
@@ -174,7 +206,7 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product, index) => (
+              {filteredProducts && filteredProducts.map((product, index) => (
                 <tr key={product._id}>
                   <td className='border border-gray-300 p-2'>{index + 1}</td>
                   <td className='border border-gray-300 p-2'>{product.name}</td>
@@ -208,7 +240,7 @@ const Products = () => {
               ))}
             </tbody>
           </table>
-         
+         {filteredProducts.length === 0 && <div>No records</div>}
         </div>
 
       {openModal && (
@@ -252,6 +284,7 @@ const Products = () => {
               <input
                 type='number'
                 name='stock'
+                min="0"
                 value={formData.stock}
                 onChange={handleChange}
                 placeholder='Enter Stock'

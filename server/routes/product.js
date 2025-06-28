@@ -1,11 +1,11 @@
 import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
-import { getProducts,addProduct,updateProduct } from '../controllers/productController.js';
+import { getProducts,addProduct,updateProduct,deleteProduct } from '../controllers/productController.js';
 const router = express.Router();
 
 router.get('/', authMiddleware, getProducts);   
 router.post('/add', authMiddleware, addProduct);
 router.put('/:id', authMiddleware, updateProduct);
-// router.delete('/:id', authMiddleware, deleteSupplier);
+router.delete('/:id', authMiddleware, deleteProduct);
 
 export default router;
