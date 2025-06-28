@@ -56,19 +56,18 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.params;
 
     const existingProduct = await Product.findById(id);
-    if (!existingSupplier) {
+    if (!existingProduct) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
 
-    if(existingProduct.isDeleted) {
-      return res.status(400).json({ success: false, message: "Product is already deleted"});
+    if (existingProduct.isDeleted) {
+      return res.status(400).json({ success: false, message: "Product is already deleted" });
     }
 
-    await Product.findByIdAndUpdate(id, { isDeleted: true },{new: true});
+    await Product.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return res.status(200).json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting Product", error);
     return res.status(500).json({ success: false, message: "Server Error" });
   }
 };
-
